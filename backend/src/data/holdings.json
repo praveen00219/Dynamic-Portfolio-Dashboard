@@ -1,0 +1,110 @@
+[
+  {
+    "id": "1",
+    "name": "Reliance Industries Ltd",
+    "ticker": "RELIANCE.NS",
+    "exchange": "NSE",
+    "purchasePrice": 2400.00,
+    "quantity": 10,
+    "sector": "Energy"
+  },
+  {
+    "id": "2",
+    "name": "HDFC Bank Ltd",
+    "ticker": "HDFCBANK.NS",
+    "exchange": "NSE",
+    "purchasePrice": 1620.00,
+    "quantity": 15,
+    "sector": "Financials"
+  },
+  {
+    "id": "3",
+    "name": "ICICI Bank Ltd",
+    "ticker": "ICICIBANK.NS",
+    "exchange": "NSE",
+    "purchasePrice": 920.00,
+    "quantity": 20,
+    "sector": "Financials"
+  },
+  {
+    "id": "4",
+    "name": "Infosys Ltd",
+    "ticker": "INFY.NS",
+    "exchange": "NSE",
+    "purchasePrice": 1450.00,
+    "quantity": 12,
+    "sector": "Technology"
+  },
+  {
+    "id": "5",
+    "name": "Tata Consultancy Services",
+    "ticker": "TCS.NS",
+    "exchange": "NSE",
+    "purchasePrice": 3350.00,
+    "quantity": 5,
+    "sector": "Technology"
+  },
+  {
+    "id": "6",
+    "name": "Wipro Ltd",
+    "ticker": "WIPRO.NS",
+    "exchange": "NSE",
+    "purchasePrice": 420.00,
+    "quantity": 30,
+    "sector": "Technology"
+  },
+  {
+    "id": "7",
+    "name": "Asian Paints Ltd",
+    "ticker": "ASIANPAINT.NS",
+    "exchange": "NSE",
+    "purchasePrice": 2850.00,
+    "quantity": 8,
+    "sector": "Consumer Goods"
+  },
+  {
+    "id": "8",
+    "name": "Hindustan Unilever Ltd",
+    "ticker": "HINDUNILVR.NS",
+    "exchange": "NSE",
+    "purchasePrice": 2550.00,
+    "quantity": 10,
+    "sector": "Consumer Goods"
+  },
+  {
+    "id": "9",
+    "name": "Bajaj Finance Ltd",
+    "ticker": "BAJFINANCE.NS",
+    "exchange": "NSE",
+    "purchasePrice": 6700.00,
+    "quantity": 3,
+    "sector": "Financials"
+  },
+  {
+    "id": "10",
+    "name": "Tata Motors Ltd",
+    "ticker": "TATAMOTORS.NS",
+    "exchange": "NSE",
+    "purchasePrice": 700.00,
+    "quantity": 25,
+    "sector": "Automobile"
+  },
+  {
+    "id": "11",
+    "name": "Sun Pharmaceutical Industries",
+    "ticker": "SUNPHARMA.NS",
+    "exchange": "NSE",
+    "purchasePrice": 1150.00,
+    "quantity": 15,
+    "sector": "Healthcare"
+  },
+  {
+    "id": "12",
+    "name": "Larsen & Toubro Ltd",
+    "ticker": "LT.NS",
+    "exchange": "NSE",
+    "purchasePrice": 3200.00,
+    "quantity": 6,
+    "sector": "Industrials"
+  }
+]

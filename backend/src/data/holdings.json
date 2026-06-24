@@ -1,110 +1,36 @@
 [
-  {
-    "id": "1",
-    "name": "Reliance Industries Ltd",
-    "ticker": "RELIANCE.NS",
-    "exchange": "NSE",
-    "purchasePrice": 2400.00,
-    "quantity": 10,
-    "sector": "Energy"
-  },
-  {
-    "id": "2",
-    "name": "HDFC Bank Ltd",
-    "ticker": "HDFCBANK.NS",
-    "exchange": "NSE",
-    "purchasePrice": 1620.00,
-    "quantity": 15,
-    "sector": "Financials"
-  },
-  {
-    "id": "3",
-    "name": "ICICI Bank Ltd",
-    "ticker": "ICICIBANK.NS",
-    "exchange": "NSE",
-    "purchasePrice": 920.00,
-    "quantity": 20,
-    "sector": "Financials"
-  },
-  {
-    "id": "4",
-    "name": "Infosys Ltd",
-    "ticker": "INFY.NS",
-    "exchange": "NSE",
-    "purchasePrice": 1450.00,
-    "quantity": 12,
-    "sector": "Technology"
-  },
-  {
-    "id": "5",
-    "name": "Tata Consultancy Services",
-    "ticker": "TCS.NS",
-    "exchange": "NSE",
-    "purchasePrice": 3350.00,
-    "quantity": 5,
-    "sector": "Technology"
-  },
-  {
-    "id": "6",
-    "name": "Wipro Ltd",
-    "ticker": "WIPRO.NS",
-    "exchange": "NSE",
-    "purchasePrice": 420.00,
-    "quantity": 30,
-    "sector": "Technology"
-  },
-  {
-    "id": "7",
-    "name": "Asian Paints Ltd",
-    "ticker": "ASIANPAINT.NS",
-    "exchange": "NSE",
-    "purchasePrice": 2850.00,
-    "quantity": 8,
-    "sector": "Consumer Goods"
-  },
-  {
-    "id": "8",
-    "name": "Hindustan Unilever Ltd",
-    "ticker": "HINDUNILVR.NS",
-    "exchange": "NSE",
-    "purchasePrice": 2550.00,
-    "quantity": 10,
-    "sector": "Consumer Goods"
-  },
-  {
-    "id": "9",
-    "name": "Bajaj Finance Ltd",
-    "ticker": "BAJFINANCE.NS",
-    "exchange": "NSE",
-    "purchasePrice": 6700.00,
-    "quantity": 3,
-    "sector": "Financials"
-  },
-  {
-    "id": "10",
-    "name": "Tata Motors Ltd",
-    "ticker": "TATAMOTORS.NS",
-    "exchange": "NSE",
-    "purchasePrice": 700.00,
-    "quantity": 25,
-    "sector": "Automobile"
-  },
-  {
-    "id": "11",
-    "name": "Sun Pharmaceutical Industries",
-    "ticker": "SUNPHARMA.NS",
-    "exchange": "NSE",
-    "purchasePrice": 1150.00,
-    "quantity": 15,
-    "sector": "Healthcare"
-  },
-  {
-    "id": "12",
-    "name": "Larsen & Toubro Ltd",
-    "ticker": "LT.NS",
-    "exchange": "NSE",
-    "purchasePrice": 3200.00,
-    "quantity": 6,
-    "sector": "Industrials"
-  }
+  { "id": "1",  "name": "HDFC Bank",                "ticker": "HDFCBANK.NS",   "exchange": "NSE", "purchasePrice": 1490, "quantity": 50,   "sector": "Financials" },
+  { "id": "2",  "name": "Bajaj Finance",            "ticker": "BAJFINANCE.NS", "exchange": "NSE", "purchasePrice": 6466, "quantity": 15,   "sector": "Financials" },
+  { "id": "3",  "name": "ICICI Bank",               "ticker": "ICICIBANK.NS",  "exchange": "NSE", "purchasePrice": 780,  "quantity": 84,   "sector": "Financials" },
+  { "id": "4",  "name": "Bajaj Housing Finance",    "ticker": "BAJAJHFL.NS",   "exchange": "NSE", "purchasePrice": 130,  "quantity": 504,  "sector": "Financials" },
+  { "id": "5",  "name": "Savani Financials",        "ticker": "511577.BO",     "exchange": "BSE", "purchasePrice": 24,   "quantity": 1080, "sector": "Financials" },
+
+  { "id": "6",  "name": "Affle India",              "ticker": "AFFLE.NS",      "exchange": "NSE", "purchasePrice": 1151, "quantity": 50,   "sector": "Technology" },
+  { "id": "7",  "name": "LTIMindtree",              "ticker": "LTIM.NS",       "exchange": "NSE", "purchasePrice": 4775, "quantity": 16,   "sector": "Technology" },
+  { "id": "8",  "name": "KPIT Technologies",        "ticker": "KPITTECH.NS",   "exchange": "NSE", "purchasePrice": 672,  "quantity": 61,   "sector": "Technology" },
+  { "id": "9",  "name": "Tata Technologies",        "ticker": "TATATECH.NS",   "exchange": "NSE", "purchasePrice": 1072, "quantity": 63,   "sector": "Technology" },
+  { "id": "10", "name": "BLS E-Services",           "ticker": "BLSE.NS",       "exchange": "NSE", "purchasePrice": 232,  "quantity": 191,  "sector": "Technology" },
+  { "id": "11", "name": "Tanla Platforms",          "ticker": "TANLA.NS",      "exchange": "NSE", "purchasePrice": 1134, "quantity": 45,   "sector": "Technology" },
+
+  { "id": "12", "name": "Avenue Supermarts (DMart)","ticker": "DMART.NS",      "exchange": "NSE", "purchasePrice": 3777, "quantity": 27,   "sector": "Consumer" },
+  { "id": "13", "name": "Tata Consumer Products",   "ticker": "TATACONSUM.NS", "exchange": "NSE", "purchasePrice": 845,  "quantity": 90,   "sector": "Consumer" },
+  { "id": "14", "name": "Pidilite Industries",      "ticker": "PIDILITIND.NS", "exchange": "NSE", "purchasePrice": 2376, "quantity": 36,   "sector": "Consumer" },
+
+  { "id": "15", "name": "Tata Power",               "ticker": "TATAPOWER.NS",  "exchange": "NSE", "purchasePrice": 224,  "quantity": 225,  "sector": "Power" },
+  { "id": "16", "name": "KPI Green Energy",         "ticker": "KPIGREEN.NS",   "exchange": "NSE", "purchasePrice": 875,  "quantity": 50,   "sector": "Power" },
+  { "id": "17", "name": "Suzlon Energy",            "ticker": "SUZLON.NS",     "exchange": "NSE", "purchasePrice": 44,   "quantity": 450,  "sector": "Power" },
+  { "id": "18", "name": "Gensol Engineering",       "ticker": "GENSOL.NS",     "exchange": "NSE", "purchasePrice": 998,  "quantity": 45,   "sector": "Power" },
+
+  { "id": "19", "name": "Hariom Pipe Industries",   "ticker": "HARIOMPIPE.NS", "exchange": "NSE", "purchasePrice": 580,  "quantity": 60,   "sector": "Pipe" },
+  { "id": "20", "name": "Astral",                   "ticker": "ASTRAL.NS",     "exchange": "NSE", "purchasePrice": 1517, "quantity": 56,   "sector": "Pipe" },
+  { "id": "21", "name": "Polycab India",            "ticker": "POLYCAB.NS",    "exchange": "NSE", "purchasePrice": 2818, "quantity": 28,   "sector": "Pipe" },
+
+  { "id": "22", "name": "Clean Science & Technology","ticker": "CLEAN.NS",     "exchange": "NSE", "purchasePrice": 1610, "quantity": 32,   "sector": "Others" },
+  { "id": "23", "name": "Deepak Nitrite",           "ticker": "DEEPAKNTR.NS",  "exchange": "NSE", "purchasePrice": 2248, "quantity": 27,   "sector": "Others" },
+  { "id": "24", "name": "Fine Organic Industries",  "ticker": "FINEORG.NS",    "exchange": "NSE", "purchasePrice": 4284, "quantity": 16,   "sector": "Others" },
+  { "id": "25", "name": "Gravita India",            "ticker": "GRAVITA.NS",    "exchange": "NSE", "purchasePrice": 2037, "quantity": 8,    "sector": "Others" },
+  { "id": "26", "name": "SBI Life Insurance",       "ticker": "SBILIFE.NS",    "exchange": "NSE", "purchasePrice": 1197, "quantity": 49,   "sector": "Others" },
+  { "id": "27", "name": "Infosys",                  "ticker": "INFY.NS",       "exchange": "NSE", "purchasePrice": 1647, "quantity": 36,   "sector": "Others" },
+  { "id": "28", "name": "Happiest Minds",           "ticker": "HAPPSTMNDS.NS", "exchange": "NSE", "purchasePrice": 1103, "quantity": 45,   "sector": "Others" },
+  { "id": "29", "name": "Easy Trip Planners",       "ticker": "EASEMYTRIP.NS", "exchange": "NSE", "purchasePrice": 20,   "quantity": 1332, "sector": "Others" }
 ]

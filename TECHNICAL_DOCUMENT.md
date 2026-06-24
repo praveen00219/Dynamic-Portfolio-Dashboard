@@ -10,10 +10,15 @@
 Neither Yahoo Finance nor Google Finance provides a free, public REST API. Scraping their websites directly breaks frequently due to DOM changes and can result in IP bans.
 
 **Solution:**
-Used the `yahoo-finance2` npm package (v2.x), which wraps Yahoo Finance's internal JSON endpoints rather than HTML scraping. This gives structured JSON responses for fields like `regularMarketPrice` (CMP), `trailingPE` (P/E ratio), and `epsTrailingTwelveMonths` (EPS/latest earnings) — covering all three required data points from one source.
+Each data point is sourced as the case study specifies:
+
+- **CMP → Yahoo Finance.** The `yahoo-finance2` npm package wraps Yahoo's internal JSON endpoints (`regularMarketPrice`), giving structured responses without HTML scraping.
+- **P/E Ratio + Latest Earnings → Google Finance.** `GoogleFinanceService` fetches the public Google Finance quote page (`https://www.google.com/finance/quote/SYMBOL:EXCHANGE`) and parses the `P/E ratio` and `Earnings per share` stats out of the rendered HTML.
+
+`FinanceService` fetches both in parallel and merges them: CMP always comes from Yahoo, while P/E and Latest Earnings prefer the Google value and **fall back to Yahoo's `trailingPE` / `epsTrailingTwelveMonths`** when a scrape returns nothing. This keeps the dashboard populated even when Google's markup changes.
 
 **Trade-off acknowledged:**
-`yahoo-finance2` is unofficial. It can break if Yahoo changes their internal API. In production, a paid data provider (Twelve Data, Alpha Vantage, NSE India API) would be used instead.
+Both sources are unofficial. Yahoo's internal API can change, and Google Finance HTML scraping is fragile by nature (class names/layout can change without notice) — hence the Yahoo fallback and graceful `—` on failure. In production, a paid data provider (Twelve Data, Alpha Vantage, NSE India API) would replace both.
 
 ---
 
@@ -22,16 +27,14 @@ Used the `yahoo-finance2` npm package (v2.x), which wraps Yahoo Finance's intern
 **Challenge:**
 Fetching quotes for 12 stocks on every request would quickly hit Yahoo Finance's rate limits, especially with a 15-second refresh interval.
 
-**Solution — Two-tier caching with `node-cache`:**
+**Solution — per-source caching with `node-cache` + request coalescing:**
 
-| Data Type        | Cache TTL | Rationale                                  |
-|------------------|-----------|--------------------------------------------|
-| CMP (price)      | 15 seconds | Matches the frontend polling interval       |
-| P/E Ratio + EPS  | 1 hour     | Changes only with quarterly results         |
+| Source / Data         | Cache key          | Cache TTL  | Rationale                                            |
+|-----------------------|--------------------|------------|------------------------------------------------------|
+| Yahoo quote (CMP)     | `quote:{ticker}`   | 15 seconds | Matches the frontend polling interval                |
+| Google fundamentals   | `google:{symbol}`  | 5 minutes  | P/E drifts slowly; throttles scraping to avoid blocks |
 
-Cache keys: `cmp:{ticker}` and `fundamentals:{ticker}`.
-
-On each API request, CacheService is checked first. A network call is only made if the cache has expired. This reduces Yahoo Finance calls from ~every 15s per ticker to once per TTL window.
+On each request, CacheService is checked first; a network call is only made when the entry has expired. In addition, each service keeps an **in-flight map** so concurrent callers for the same ticker/symbol share one request instead of stampeding the upstream. Together these cap Yahoo at once per ticker per 15s and Google at once per symbol per 5 min, regardless of how many clients poll.
 
 ---
 

@@ -1,75 +1,82 @@
 import YahooFinanceApi from 'yahoo-finance2';
 import cacheService from './CacheService.js';
+import googleFinanceService, { GoogleFinanceService } from './GoogleFinanceService.js';
 import { QuoteData } from '../types/index.js';
 
-// One TTL per ticker. CMP, P/E and EPS all come from the same yahoo-finance2
-// quote() response, so a single cache entry refreshed every 15s (the frontend
-// polling interval) is both correct and as cheap as possible — a second,
-// longer-lived "fundamentals" cache would never prevent a network call because
-// the price (which must be fresh) is fetched in the same request.
-const QUOTE_CACHE_TTL = 15;
+// CMP is volatile — refresh every 15 seconds (matches the frontend polling interval).
+const CMP_CACHE_TTL = 15;
 
 // yahoo-finance2 exports the YahooFinance class itself (not a pre-made instance).
 // We instantiate it here so method calls have the correct 'this' context.
 const yf = new YahooFinanceApi();
 
+// Yahoo gives us CMP plus P/E and EPS in a single quote() call. CMP is the
+// authoritative source; the P/E and EPS are kept only as a fallback for when
+// Google Finance (the task's required source for those two) is unavailable.
+interface YahooQuote {
+  cmp: number | null;
+  peRatio: number | null;
+  latestEarnings: number | null;
+}
+
 /**
- * FinanceService fetches live stock quotes from Yahoo Finance (via yahoo-finance2).
+ * FinanceService produces a combined quote for a ticker:
  *
- * Yahoo Finance has no official public API, so yahoo-finance2 calls their
- * internal JSON endpoints. This can break with site changes and may hit rate
- * limits, so each ticker is:
- *   - cached for QUOTE_CACHE_TTL seconds (one entry per ticker), and
- *   - request-coalesced: concurrent callers for the same ticker share a single
- *     in-flight network request instead of each firing their own (stampede
- *     prevention).
+ *   CMP             → Yahoo Finance (yahoo-finance2)            — always
+ *   P/E Ratio       → Google Finance, falling back to Yahoo    — per the task
+ *   Latest Earnings → Google Finance, falling back to Yahoo    — per the task
  *
- * Together these guarantee Yahoo is called at most once per ticker per TTL
- * window, regardless of how many endpoints or clients ask at the same time.
- *
- * Data fields used:
- *   regularMarketPrice       → CMP
- *   trailingPE               → P/E Ratio (trailing twelve months)
- *   epsTrailingTwelveMonths  → Latest EPS (earnings per share)
+ * Yahoo and Google are fetched in parallel. Each source is cached and
+ * request-coalesced independently so the upstreams are hit at most once per
+ * ticker per TTL window regardless of how many callers ask concurrently.
  */
 class FinanceService {
-  // Tickers with a network request currently in progress. Concurrent callers
-  // await the same promise so only one Yahoo request is made per ticker.
-  private inFlight = new Map<string, Promise<QuoteData>>();
+  // Tickers with a Yahoo request currently in progress (coalescing).
+  private inFlight = new Map<string, Promise<YahooQuote>>();
 
   async getQuote(ticker: string): Promise<QuoteData> {
+    // Fetch both sources in parallel — neither blocks the other.
+    const [yahoo, google] = await Promise.all([
+      this.getYahooQuote(ticker),
+      googleFinanceService.getFundamentals(GoogleFinanceService.toSymbol(ticker)),
+    ]);
+
+    return {
+      cmp: yahoo.cmp,
+      // Google is primary for P/E and earnings; Yahoo fills any gap.
+      peRatio: google.peRatio ?? yahoo.peRatio,
+      latestEarnings: google.latestEarnings ?? yahoo.latestEarnings,
+    };
+  }
+
+  /** Yahoo quote (CMP + fallback fundamentals), cached 15s and coalesced per ticker. */
+  private async getYahooQuote(ticker: string): Promise<YahooQuote> {
     const cacheKey = `quote:${ticker}`;
 
-    // 1. Fresh value in cache — return immediately, no network call.
-    const cached = cacheService.get<QuoteData>(cacheKey);
+    const cached = cacheService.get<YahooQuote>(cacheKey);
     if (cached !== undefined) return cached;
 
-    // 2. A fetch for this ticker is already running — reuse it (coalescing).
     const pending = this.inFlight.get(ticker);
     if (pending !== undefined) return pending;
 
-    // 3. Cache miss with nothing in flight — start a single fetch and register
-    //    it so any concurrent callers share this exact promise.
-    const request = this.fetchAndCache(ticker, cacheKey);
+    const request = this.fetchYahoo(ticker, cacheKey);
     this.inFlight.set(ticker, request);
     return request;
   }
 
-  private async fetchAndCache(ticker: string, cacheKey: string): Promise<QuoteData> {
+  private async fetchYahoo(ticker: string, cacheKey: string): Promise<YahooQuote> {
     try {
       const quote = await yf.quote(ticker);
 
-      const data: QuoteData = {
+      const data: YahooQuote = {
         cmp: quote.regularMarketPrice ?? null,
         peRatio: quote.trailingPE ?? null,
         latestEarnings: quote.epsTrailingTwelveMonths ?? null,
       };
 
-      // Only cache a usable quote. If the price came back null (failed/empty
-      // response), leave it uncached so the next cycle retries instead of
-      // serving "—" for the whole TTL window.
+      // Only cache a usable quote so a failed/empty price is retried next cycle.
       if (data.cmp !== null) {
-        cacheService.set(cacheKey, data, QUOTE_CACHE_TTL);
+        cacheService.set(cacheKey, data, CMP_CACHE_TTL);
       }
 
       return data;
@@ -81,8 +88,7 @@ class FinanceService {
       // Return null values on failure — the UI displays "—" for missing data.
       return { cmp: null, peRatio: null, latestEarnings: null };
     } finally {
-      // Always release the in-flight slot so future cycles can fetch again,
-      // whether this attempt succeeded or failed.
+      // Always release the in-flight slot so future cycles can fetch again.
       this.inFlight.delete(ticker);
     }
   }
@@ -90,7 +96,7 @@ class FinanceService {
   /**
    * Fetch multiple quotes in parallel using Promise.allSettled so one failure
    * does not block the rest of the portfolio from loading. Per-ticker caching
-   * and coalescing (above) keep the actual Yahoo call count bounded.
+   * and coalescing keep the actual upstream call count bounded.
    */
   async getMultipleQuotes(tickers: string[]): Promise<Map<string, QuoteData>> {
     const results = new Map<string, QuoteData>();

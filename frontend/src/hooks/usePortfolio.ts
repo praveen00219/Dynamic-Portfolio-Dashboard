@@ -71,6 +71,9 @@ export function usePortfolio() {
 
   useEffect(() => {
     let timeoutId: ReturnType<typeof setTimeout> | undefined;
+    // Set on cleanup so a fetch that resolves after unmount can't reschedule
+    // the loop (which would leave a detached poll running forever).
+    let cancelled = false;
 
     const clearPending = () => {
       if (timeoutId) {
@@ -85,13 +88,15 @@ export function usePortfolio() {
     };
 
     // One poll cycle: fetch, then queue the next tick — but only while the tab
-    // is visible, so a backgrounded tab stops polling entirely.
+    // is visible and the effect is still active, so a backgrounded tab or an
+    // unmounted component stops polling entirely.
     const run = async () => {
       await fetchAll();
-      if (!document.hidden) scheduleNext();
+      if (!cancelled && !document.hidden) scheduleNext();
     };
 
     const handleVisibility = () => {
+      if (cancelled) return;
       if (document.hidden) {
         clearPending(); // pause polling in the background
       } else {
@@ -103,6 +108,7 @@ export function usePortfolio() {
     document.addEventListener('visibilitychange', handleVisibility);
 
     return () => {
+      cancelled = true;
       clearPending();
       document.removeEventListener('visibilitychange', handleVisibility);
     };

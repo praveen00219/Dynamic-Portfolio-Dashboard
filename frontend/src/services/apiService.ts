@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { ApiResponse, StockData, SectorSummary, PortfolioSummary } from '../types';
+import { ApiResponse, StockData, SectorSummary, PortfolioSummary, DashboardData } from '../types';
 
 // In development, Next.js rewrites /api/* to the Express backend (see next.config.ts).
 // In production, set NEXT_PUBLIC_API_URL to the deployed backend URL.
@@ -20,6 +20,11 @@ async function unwrap<T>(promise: Promise<{ data: ApiResponse<T> }>): Promise<T>
 }
 
 export const portfolioApi = {
+  // Combined payload (stocks + sectors + summary) from a single request.
+  // Preferred by the dashboard to avoid making three calls per refresh.
+  getDashboard: () =>
+    unwrap(client.get<ApiResponse<DashboardData>>('/api/portfolio/dashboard')),
+
   getPortfolio: () =>
     unwrap(client.get<ApiResponse<StockData[]>>('/api/portfolio')),
 

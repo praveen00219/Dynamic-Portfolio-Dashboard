@@ -20,7 +20,7 @@ A full-stack real-time investment portfolio tracker.
 │       │   └── calculations.ts       # Pure calculation helpers
 │       ├── services/
 │       │   ├── CacheService.ts        # node-cache singleton wrapper
-│       │   ├── FinanceService.ts       # CMP from Yahoo; merges Google + Yahoo fundamentals
+│       │   ├── FinanceService.ts       # CMP via Yahoo chart endpoint; P/E + EPS from Google
 │       │   ├── GoogleFinanceService.ts # P/E + Latest Earnings scraped from Google Finance
 │       │   └── PortfolioService.ts     # Orchestration: holdings + quotes → StockData
 │       ├── routes/

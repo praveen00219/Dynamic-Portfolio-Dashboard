@@ -12,13 +12,13 @@ Neither Yahoo Finance nor Google Finance provides a free, public REST API. Scrap
 **Solution:**
 Each data point is sourced as the case study specifies:
 
-- **CMP → Yahoo Finance.** The `yahoo-finance2` npm package wraps Yahoo's internal JSON endpoints (`regularMarketPrice`), giving structured responses without HTML scraping.
+- **CMP → Yahoo Finance.** Fetched from Yahoo's public chart endpoint (`/v8/finance/chart/{ticker}` → `meta.regularMarketPrice`). This endpoint needs **no auth crumb**, so it avoids the `Failed to get crumb, status 429` errors that the cookie-gated `quote` endpoint (used by `yahoo-finance2`) now returns; `query2` is tried as a fallback host.
 - **P/E Ratio + Latest Earnings → Google Finance.** `GoogleFinanceService` fetches the public Google Finance quote page (`https://www.google.com/finance/quote/SYMBOL:EXCHANGE`) and parses the `P/E ratio` and `Earnings per share` stats out of the rendered HTML.
 
-`FinanceService` fetches both in parallel and merges them: CMP always comes from Yahoo, while P/E and Latest Earnings prefer the Google value and **fall back to Yahoo's `trailingPE` / `epsTrailingTwelveMonths`** when a scrape returns nothing. This keeps the dashboard populated even when Google's markup changes.
+`FinanceService` fetches CMP (Yahoo chart) and the Google fundamentals in parallel and merges them. P/E and Latest Earnings come from Google; on a failed scrape those fields render `—`.
 
 **Trade-off acknowledged:**
-Both sources are unofficial. Yahoo's internal API can change, and Google Finance HTML scraping is fragile by nature (class names/layout can change without notice) — hence the Yahoo fallback and graceful `—` on failure. In production, a paid data provider (Twelve Data, Alpha Vantage, NSE India API) would replace both.
+Both sources are unofficial. The Yahoo chart endpoint can change or rate-limit, and Google Finance HTML scraping is fragile by nature (class names/layout can change without notice) — hence the graceful `—` on failure. In production, a paid data provider (Twelve Data, Alpha Vantage, NSE India API) would replace both.
 
 ---
 
@@ -31,7 +31,7 @@ Fetching quotes for 12 stocks on every request would quickly hit Yahoo Finance's
 
 | Source / Data         | Cache key          | Cache TTL  | Rationale                                            |
 |-----------------------|--------------------|------------|------------------------------------------------------|
-| Yahoo quote (CMP)     | `quote:{ticker}`   | 15 seconds | Matches the frontend polling interval                |
+| Yahoo chart (CMP)     | `cmp:{ticker}`   | 15 seconds | Matches the frontend polling interval                |
 | Google fundamentals   | `google:{symbol}`  | 5 minutes  | P/E drifts slowly; throttles scraping to avoid blocks |
 
 On each request, CacheService is checked first; a network call is only made when the entry has expired. In addition, each service keeps an **in-flight map** so concurrent callers for the same ticker/symbol share one request instead of stampeding the upstream. Together these cap Yahoo at once per ticker per 15s and Google at once per symbol per 5 min, regardless of how many clients poll.

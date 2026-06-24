@@ -19,9 +19,10 @@ A full-stack real-time investment portfolio tracker.
 │       ├── utils/
 │       │   └── calculations.ts       # Pure calculation helpers
 │       ├── services/
-│       │   ├── CacheService.ts       # node-cache singleton wrapper
-│       │   ├── FinanceService.ts     # Yahoo Finance via yahoo-finance2
-│       │   └── PortfolioService.ts   # Orchestration: holdings + quotes → StockData
+│       │   ├── CacheService.ts        # node-cache singleton wrapper
+│       │   ├── FinanceService.ts       # CMP from Yahoo; merges Google + Yahoo fundamentals
+│       │   ├── GoogleFinanceService.ts # P/E + Latest Earnings scraped from Google Finance
+│       │   └── PortfolioService.ts     # Orchestration: holdings + quotes → StockData
 │       ├── routes/
 │       │   └── portfolio.ts          # Express route handlers
 │       ├── middleware/

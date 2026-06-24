@@ -37,6 +37,12 @@ export interface PortfolioSummary {
   lastUpdated: string;
 }
 
+export interface DashboardData {
+  stocks: StockData[];
+  sectors: SectorSummary[];
+  summary: PortfolioSummary;
+}
+
 export interface ApiResponse<T> {
   success: boolean;
   data: T;

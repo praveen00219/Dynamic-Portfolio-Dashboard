@@ -3,7 +3,7 @@ import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import financeService from './FinanceService.js';
 import { buildStockData } from '../utils/calculations.js';
-import { Holding, StockData, SectorSummary, PortfolioSummary } from '../types/index.js';
+import { Holding, StockData, SectorSummary, PortfolioSummary, DashboardData } from '../types/index.js';
 
 // ESM does not expose __dirname — derive it from the current module's URL
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -51,10 +51,12 @@ class PortfolioService {
     });
   }
 
-  async getSectorSummaries(): Promise<SectorSummary[]> {
-    const stocks = await this.getPortfolio();
-
-    // Group stocks by sector
+  /**
+   * Pure derivation: group an already-built stocks array by sector.
+   * Accepts StockData[] so callers can reuse a single getPortfolio() build
+   * instead of re-fetching quotes (this is what removes the API amplification).
+   */
+  private summarizeBySector(stocks: StockData[]): SectorSummary[] {
     const sectorMap = new Map<string, StockData[]>();
     for (const stock of stocks) {
       const existing = sectorMap.get(stock.sector) ?? [];
@@ -84,9 +86,10 @@ class PortfolioService {
     });
   }
 
-  async getSummary(): Promise<PortfolioSummary> {
-    const stocks = await this.getPortfolio();
-
+  /**
+   * Pure derivation: portfolio-level totals from an already-built stocks array.
+   */
+  private summarize(stocks: StockData[]): PortfolioSummary {
     const totalInvestment = stocks.reduce((sum, s) => sum + s.investment, 0);
     const totalPresentValue = stocks.reduce(
       (sum, s) => sum + (s.presentValue ?? s.investment),
@@ -103,6 +106,32 @@ class PortfolioService {
       totalGainLossPercent,
       stockCount: stocks.length,
       lastUpdated: new Date().toISOString(),
+    };
+  }
+
+  async getSectorSummaries(): Promise<SectorSummary[]> {
+    const stocks = await this.getPortfolio();
+    return this.summarizeBySector(stocks);
+  }
+
+  async getSummary(): Promise<PortfolioSummary> {
+    const stocks = await this.getPortfolio();
+    return this.summarize(stocks);
+  }
+
+  /**
+   * Combined dashboard payload: builds the portfolio ONCE and derives sectors
+   * and summary from the same array. This replaces the previous pattern where
+   * the frontend made three separate calls that each rebuilt the portfolio
+   * (3× API amplification). The standalone routes above are kept for
+   * backward compatibility.
+   */
+  async getDashboard(): Promise<DashboardData> {
+    const stocks = await this.getPortfolio();
+    return {
+      stocks,
+      sectors: this.summarizeBySector(stocks),
+      summary: this.summarize(stocks),
     };
   }
 }

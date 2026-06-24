@@ -2,7 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import portfolioRouter from './routes/portfolio.js';
-import { requestLogger, errorHandler } from './middleware/errorHandler.js';
+import { requestLogger, notFoundHandler, errorHandler } from './middleware/errorHandler.js';
 
 dotenv.config();
 
@@ -21,6 +21,9 @@ app.use('/api/portfolio', portfolioRouter);
 app.get('/health', (_req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
+
+// Unmatched routes → typed 404 in the standard JSON envelope
+app.use(notFoundHandler);
 
 // Must be last — catches errors forwarded via next(error)
 app.use(errorHandler);
